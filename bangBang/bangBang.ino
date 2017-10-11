@@ -1,6 +1,5 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
-#include <Servo.h>
 
 float minTurn = 8;           //min rate at which to turn
 float turnRate = 8;         //variable for current turn rate
@@ -11,10 +10,8 @@ float forwardSpeed = 10;//variable for current speed
 float speedAcc = .01;  //acceleration while not turning
 int leftThres = 600;  //threshold to detect line
 int rightThres = 600;
-Servo rightWheel;         //create servo object to control right wheel
-Servo leftWheel;         //create servo object to control left wheel
 int rightSensor = 1000; //variable for right sensor value
-int leftSensor = 1000; //vairable for left sensor value
+int leftSensor = 1000; //variable for left sensor value
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();  
   // Select which 'port' M1, M2, M3 or M4. In this case, M1
 Adafruit_DCMotor *myMotorL = AFMS.getMotor(1);
@@ -33,6 +30,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  sendData(forwardSpeed, forwardSpeed);                               //print data to Serial moniter for later use in Python
   myMotorL->run(FORWARD);
   myMotorR->run(FORWARD);
   if (forwardSpeed < maxSpeed)forwardSpeed += speedAcc; //increment speed by the acceleration
@@ -44,11 +42,7 @@ void loop() {
     turnRate += turnAcc;//increment turn rate
     myMotorR->setSpeed(turnRate);
     myMotorL->setSpeed(0);
-    Serial.println("Left");
-    Serial.println(analogRead(A1));
-//    if(checkRight()){
-//      break;
-//    }
+    sendData(0,turnRate);                         //print data to Serial moniter for later use in Python
   }
   myMotorL->setSpeed(forwardSpeed);//reset speed
   myMotorR->setSpeed(forwardSpeed);
@@ -59,11 +53,7 @@ void loop() {
     turnRate += turnAcc;
     myMotorL->setSpeed(turnRate);
     myMotorR->setSpeed(0);
-    Serial.println("Right");
-    Serial.println(analogRead(A0));
-//    if(checkLeft()){
-//      break;
-//    }
+    sendData(turnRate,0);                         //print data to Serial moniter for later use in Python
   }
   myMotorL->setSpeed(forwardSpeed);
   myMotorR->setSpeed(forwardSpeed);
@@ -80,4 +70,16 @@ bool checkRight(){
   return rightSensor > rightThres;
 }
 
+void sendData(float leftVal,float rightVal) {
+  Serial.print('<');
+  Serial.print(leftVal);
+  Serial.print(',');
+  Serial.print(analogRead(A1));
+  Serial.print(',');
+  Serial.print(rightVal);
+  Serial.print(',');
+  Serial.print(analogRead(A0));
+  
+  Serial.println();
+}
 
