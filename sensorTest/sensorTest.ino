@@ -9,5 +9,5 @@ void loop() {
   // put your main code here, to run repeatedly:
   Serial.println(analogRead(A0));
 //  Serial.print(', ');
-  Serial.println(analogRead(A1));
+//  /Serial.println(analogRead(A1));
 }

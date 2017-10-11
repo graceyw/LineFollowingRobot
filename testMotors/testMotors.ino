@@ -19,8 +19,8 @@ void setup() {
   //AFMS.begin(1000);  // OR with a different frequency, say 1KHz
   
   // Set the speed to start, from 0 (off) to 255 (max speed)
-  myMotorL->setSpeed(150);
-  myMotorR->setSpeed(150);
+  myMotorL->setSpeed(50);
+  myMotorR->setSpeed(50);
   myMotorL->run(FORWARD);
   myMotorL->run(RELEASE);
   myMotorR->run(FORWARD);
@@ -30,7 +30,8 @@ void setup() {
 void loop() {
   uint8_t i;
   
-  Serial.print("tick");
+
+  Serial.print("tock");
 
   myMotorL->run(FORWARD);
   myMotorR->run(FORWARD);
@@ -44,23 +45,6 @@ void loop() {
     myMotorR->setSpeed(i);  
     delay(10);
   }
-  
-  Serial.print("tock");
 
-  myMotorL->run(BACKWARD);
-  myMotorR->run(BACKWARD);
-  for (i=0; i<255; i++) {
-    myMotorL->setSpeed(i);  
-    myMotorR->setSpeed(i); 
-    delay(10);
-  }
-  for (i=255; i!=0; i--) {
-    myMotorL->setSpeed(i);
-    myMotorR->setSpeed(i);  
-    delay(10);
-  }
-
-  Serial.print("tech");
-  myMotorL->run(RELEASE);
   delay(1000);
 }
