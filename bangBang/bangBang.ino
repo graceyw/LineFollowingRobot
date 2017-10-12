@@ -1,13 +1,13 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 
-float minTurn = 8;           //min rate at which to turn
-float turnRate = 8;         //variable for current turn rate
-float turnAcc = .5;        //acceleration while turning (the more time spent turning, the faster the turn)
-float lowestSpeed = 10;   //minimum speed
-float maxSpeed = 50;     //maximum speed
-float forwardSpeed = 10;//variable for current speed
-float speedAcc = .01;  //acceleration while not turning
+float minTurn = 5;           //min rate at which to turn
+float turnRate = 5;         //variable for current turn rate
+float turnAcc = 3;        //acceleration while turning (the more time spent turning, the faster the turn)
+float lowestSpeed = 20;   //minimum speed
+float maxSpeed = 25;     //maximum speed
+float forwardSpeed = 20;//variable for current speed
+float speedAcc = .03;  //acceleration while not turning
 int leftThres = 600;  //threshold to detect line
 int rightThres = 600;
 int rightSensor = 1000; //variable for right sensor value
@@ -19,7 +19,6 @@ Adafruit_DCMotor *myMotorR = AFMS.getMotor(2);
 void setup() {
   AFMS.begin();
   Serial.begin(9600);
-  Serial.println("test");
   // You can also make another motor on port M2
   //Adafruit_DCMotor *myOtherMotor = AFMS.getMotor(2);
   myMotorL->setSpeed(10);
@@ -38,11 +37,18 @@ void loop() {
   turnRate = minTurn;//reset turn rate
   
   while(checkLeft()){
-    if(forwardSpeed > lowestSpeed) forwardSpeed -= speedAcc;//decrement speed by acceleration
+    if(forwardSpeed > lowestSpeed) forwardSpeed -= 5 * speedAcc;//decrement speed by acceleration
     turnRate += turnAcc;//increment turn rate
-    myMotorR->setSpeed(turnRate);
-    myMotorL->setSpeed(0);
-    sendData(0,turnRate);                         //print data to Serial moniter for later use in Python
+    
+    myMotorR->setSpeed(forwardSpeed + turnRate/3);
+    if(turnRate>forwardSpeed){
+      myMotorL->setSpeed(0);
+      sendData(0,forwardSpeed + turnRate/3);
+    }else{
+      myMotorL->setSpeed(forwardSpeed - turnRate);
+      sendData(forwardSpeed - turnRate,forwardSpeed + turnRate/3);
+    }
+                             //print data to Serial moniter for later use in Python
   }
   myMotorL->setSpeed(forwardSpeed);//reset speed
   myMotorR->setSpeed(forwardSpeed);
@@ -51,9 +57,14 @@ void loop() {
   while(checkRight()){
     if(forwardSpeed > lowestSpeed) forwardSpeed -= speedAcc;
     turnRate += turnAcc;
-    myMotorL->setSpeed(turnRate);
-    myMotorR->setSpeed(0);
-    sendData(turnRate,0);                         //print data to Serial moniter for later use in Python
+    myMotorL->setSpeed(forwardSpeed + turnRate/3);
+    if(turnRate>forwardSpeed){
+      myMotorR->setSpeed(0);
+      sendData(forwardSpeed + turnRate/3,0);
+    }else{
+      myMotorR->setSpeed(forwardSpeed - turnRate);
+      sendData(forwardSpeed + turnRate/3,forwardSpeed - turnRate);
+    }                       //print data to Serial moniter for later use in Python
   }
   myMotorL->setSpeed(forwardSpeed);
   myMotorR->setSpeed(forwardSpeed);
@@ -79,7 +90,6 @@ void sendData(float leftVal,float rightVal) {
   Serial.print(rightVal);
   Serial.print(',');
   Serial.print(analogRead(A0));
-  
   Serial.println();
 }
 
