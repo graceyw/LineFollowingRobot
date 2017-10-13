@@ -34,16 +34,16 @@ while running:
     if result[0] == '<':
         result = result[1:-1]   #cut off carrot
         result = result.replace('\n','')   #replace any \n 's with nothing
-        result = result.replace('<',',')
+        result = result.replace('<',',')   #replace any <'s with commas
         data = result.split(',')
-        if len(data) == 4:
+        if len(data) == 4:                      #if it is usable data containing one value from each sensor and motor
             print(len(leftMotor))
-            leftMotor.append(float(data[0]))
-            leftSensor.append(float(data[1]))
-            rightMotor.append(float(data[2]))
-            rightSensor.append(float(data[3]))
+            leftMotor.append(float(data[0]))     #add the left motor value to the leftMotor list
+            leftSensor.append(float(data[1]))    #add the left sensor value to the leftSensor list
+            rightMotor.append(float(data[2]))    #add the right motor value to the rightMotor list
+            rightSensor.append(float(data[3]))   #add the right motor value to the rightMotor list
     if len(leftMotor) > 500:
-        break
+        break                   #stop after 500 because we don't need more than ~500 data points to create a useful visualization
 
 leftMotor = np.array(leftMotor)
 leftSensor= np.array(leftSensor)
@@ -63,14 +63,3 @@ plt.legend()
 plt.xlabel('Time')
 plt.ylabel('Values')
 plt.show()
-
-
-# Customize the z axis.
-#ax.zaxis.set_major_locator(LinearLocator(10))
-#ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-
-# Add a color bar which maps values to colors.
-#fig.colorbar(surf, shrink=0.5, aspect=5)
-#ax.set_xlabel('X axis')
-#ax.set_ylabel('Z axis')
-#ax.set_zlabel('Y axis')
